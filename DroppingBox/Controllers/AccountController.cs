@@ -36,7 +36,7 @@ namespace DroppingBox.Controllers
                 if (user != null)
                 {
                     if (user.Password.Equals(model.Password)) {
-                        return Redirect(model?.ReturnUrl ?? "/Home/Index");
+                        return Redirect(model?.ReturnUrl ?? "/Box/Index");
                     }
                 }
 

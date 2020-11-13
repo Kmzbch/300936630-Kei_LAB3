@@ -4,7 +4,7 @@ using System;
 namespace DroppingBox.Models
 {
     [DynamoDBTable("Files")]
-    public class Files
+    public class File
     {
 
         [DynamoDBHashKey]

@@ -1,0 +1,41 @@
+﻿@model List<File>
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            File Name
+        </th>
+        <th>
+            File Link
+        </th>
+        <th>
+            Comment
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileLink)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comment)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.FileId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.FileId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.FileId })
+            </td>
+        </tr>
+    }
+
+</table>

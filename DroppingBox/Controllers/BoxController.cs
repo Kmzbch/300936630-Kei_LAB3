@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using DroppingBox.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +9,33 @@ namespace DroppingBox.Controllers
 {
     public class BoxController : Controller
     {
-        // GET: BoxController
-        public ActionResult Index()
+        public string BucketName = "";
+        private string loggedInEmail = "";
+        private List<File> files;
+
+        private AmazonDynamoDBClient client;
+        private DynamoDBContext context;
+
+
+        public BoxController()
         {
-            return View();
+            //client = new AmazonDynamoDBClient();
+            //context = new DynamoDBContext(client);
+
+            this.loggedInEmail = "cdfray@gmail.com";
+
+            files = new List<File>
+            {
+                new File{ FileId = "1", FileName = "File 1", FileLink = null, Comment = "comment 1" },
+                new File{ FileId = "2", FileName = "File 2", FileLink = null, Comment = "comment 2" }
+            };
         }
 
-        // GET: BoxController/Details/5
+        public ActionResult Index()
+        {
+            return View(files);
+        }
+
         public ActionResult Details(int id)
         {
             return View();
