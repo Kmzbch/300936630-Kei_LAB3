@@ -27,11 +27,11 @@ namespace DroppingBox.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model)
+        public async Task<ActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
-                User user = iUserRepository.GetByEmail(model.Email);
+                User user = await iUserRepository.GetByEmail(model.Email);
 
                 if (user != null)
                 {
@@ -55,11 +55,11 @@ namespace DroppingBox.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Signup(SignupModel model)
+        public async Task<ActionResult> Signup(SignupModel model)
         {
             if (ModelState.IsValid)
             {
-                if(!iUserRepository.Exists(model.Email))
+                if(! await iUserRepository.Exists(model.Email))
                 {
                     User newUser = new User
                     {
@@ -71,7 +71,7 @@ namespace DroppingBox.Controllers
 
                     try
                     {
-                        iUserRepository.Create(newUser);
+                        await iUserRepository.Create(newUser);
 
                         return RedirectToAction(nameof(Login));
                     }

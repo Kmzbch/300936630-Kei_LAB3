@@ -1,54 +1,45 @@
-﻿using System;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.Runtime;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DroppingBox.Models
 {
     public interface IUserRepository
     {
-
-        List<User> GetAll();
-        User GetByEmail(string email);
-        void Create(User user);
-
-        bool Exists(string email);
+//        Task<List<User>> GetAll();
+        Task<User> GetByEmail(string email);
+        Task Create(User user);
+        Task<bool> Exists(string email);
     }
 
-    public class MemoryUserRepository : IUserRepository
+
+    public class UserRepository : IUserRepository
     {
-        private List<User> users
-                    = new List<User>
-                    {
-                        new User
-                        {
-                            Email = "cdfray@gmail.com",
-                            FirstName = "Kei",
-                            LastName = "Mizubuchi",
-                            Password = "password"
-                        },
-                        new User
-                        {
-                            Email = "aarnest@gmail.com",
-                            FirstName = "Alice",
-                            LastName = "Arnest",
-                            Password = "password"
-                        },
+        private DDBOperations dDBOperations;
 
-                    };
-
-        public List<User> GetAll() { return users; }
-
-        public User GetByEmail(string email) {
-            return users.Find(u => u.Email.Equals(email)); }
-
-        public void Create(User user) {
-            users.Add(user);
+        public UserRepository()
+        {
+            dDBOperations = new DDBOperations();
         }
 
-        public bool Exists(string email)
+        //public async Task<List<User>> GetAll() { 
+        //    return await dDBOperations.get; 
+        //}
+
+        public async Task<User> GetByEmail(string email) {
+            return await dDBOperations.Load(email); }
+
+        public async Task Create(User user) {
+            await dDBOperations.Insert(user);
+        }
+
+        public async Task<bool> Exists(string email)
         {
-            return users.Exists(u=>u.Email == email);
+            User user = await dDBOperations.Load(email);
+
+            return user != null;
         }
 
 

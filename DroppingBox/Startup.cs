@@ -21,7 +21,7 @@ namespace DroppingBox
         {
             services.AddControllersWithViews();
 
-            services.AddSingleton<IUserRepository, MemoryUserRepository>();
+            services.AddSingleton<IUserRepository, UserRepository>();
             services.AddMvc();
         }
 

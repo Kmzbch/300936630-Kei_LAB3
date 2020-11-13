@@ -4,8 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DroppingBox.Models
@@ -13,18 +12,77 @@ namespace DroppingBox.Models
     public class DDBOperations
     {
         // fields
-        AmazonDynamoDBClient client;
-        DynamoDBContext context;
-        Amazon.Runtime.BasicAWSCredentials credentials;
+        AmazonDynamoDBClient _client;
+        DynamoDBContext _context;
+        Amazon.Runtime.BasicAWSCredentials _credentials;
 
         // Construtor
         public DDBOperations()
         {
-            credentials = new BasicAWSCredentials(
-                ConfigurationManager.AppSettings["accessId"],
-                ConfigurationManager.AppSettings["secretKey"]);
-            client = new AmazonDynamoDBClient(credentials, Amazon.RegionEndpoint.USEast1);
-            context = new DynamoDBContext(client);
+            //
+            _credentials = new BasicAWSCredentials(
+                "AKIAWY236QUIRI4U3HNE",
+                "bu0oSqT27h40WljOOoUDVo7qtRh7PAPN0RYxrRQe");
+            _client = new AmazonDynamoDBClient(_credentials, Amazon.RegionEndpoint.USEast1);
+            _context = new DynamoDBContext(_client);
+
+            //
+            if (this.GetTableStatus("User").Equals("NOTABLE"))
+            {
+                Task.Run(async () =>
+                {
+                    await InitialDBCreation();
+                }).Wait();
+            }
+        }
+
+        private async Task InitialDBCreation()
+        {
+            // create User table
+            await this.CreateTable();
+
+            // wait for database being active
+            do
+            {
+                Thread.Sleep(500);
+            } while (!this.GetTableStatus("User").Equals("ACTIVE"));
+
+            // inserting initial user
+            List<File> files = new List<File>
+            {
+                        new File
+                        {
+                            FileId = "1",
+                            FileName = "image.jpg",
+                            FileLink = null,
+                            Comment = "Good"
+                        },
+                        new File
+                        {
+                            FileId = "2",
+                            FileName = "image2.jpg",
+                            FileLink = null,
+                            Comment = "Good"
+                        },
+            };
+
+            User user = new User
+            {
+                Email = "cdfray@gmail.com",
+                FirstName = "Kei",
+                LastName = "Mizubuchi",
+                Password = "password",
+                Files = files
+            };
+
+            await this.Insert(user);
+
+            // wait for database being active
+            do
+            {
+                Thread.Sleep(500);
+            } while (!this.GetTableStatus("User").Equals("ACTIVE"));
+
         }
 
         // table creation
@@ -35,18 +93,16 @@ namespace DroppingBox.Models
                 TableName = "User",
                 AttributeDefinitions = new List<AttributeDefinition>
                 {
-                    new AttributeDefinition
-                    {
-                        AttributeName = "Id",
-                        AttributeType = "N"
-                    },
+                    new AttributeDefinition{
+                        AttributeName="Email", 
+                        AttributeType=ScalarAttributeType.S}
                 },
                 KeySchema = new List<KeySchemaElement>
                 {
                     new KeySchemaElement
                     {
-                        AttributeName = "Id",
-                        KeyType = "HASH"
+                        AttributeName="Email",
+                        KeyType=KeyType.HASH
                     },
                 },
                 BillingMode = BillingMode.PROVISIONED,
@@ -56,57 +112,64 @@ namespace DroppingBox.Models
                     WriteCapacityUnits = 1
                 }
             };
-            await client.CreateTableAsync(request);
+            await _client.CreateTableAsync(request);
         }
 
+
         //// table description
-        //public string GetTableStatus(string tableName)
-        //{
-        //    var request = new DescribeTableRequest
-        //    {
-        //        TableName = tableName
-        //    };
+        public string GetTableStatus(string tableName)
+        {
+            var request = new DescribeTableRequest
+            {
+                TableName = tableName
+            };
 
-        //    try
-        //    {
-        //        var response = client.DescribeTable(request);
+            try
+            {
+                TableDescription description = 
+                    _client.DescribeTableAsync(request).Result.Table;
 
-        //        TableDescription description = response.Table;
+                return description.TableStatus;
 
-        //        // return CREATING/UPDATING/DELETING/ACTIVE
-        //        return description.TableStatus;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return "NOTABLE";
-        //    }
-        //}
 
-        //// CREATE
-        //public async Task Insert(User newUser)
-        //{
-        //    await context.SaveAsync(newUser);
-        //}
+                // var response = _client.DescribeTableAsync(request);
 
-        //// READ
-        //public async Task<User> Load(int id)
-        //{
-        //    User loadUser = await context.LoadAsync<User>(id, new DynamoDBContextConfig
-        //    {
-        //        ConsistentRead = true
-        //    });
+                //TableDescription description = response;
 
-        //    return loadUser;
-        //}
+                //// return CREATING/UPDATING/DELETING/ACTIVE
+                //return description.TableStatus;
+            }
+            catch (Exception e)
+            {
+                return "NOTABLE";
+            }
+        }
 
-        //// UPDATE
-        //public async Task Update(User user)
-        //{
-        //    User userRetrieved = await context.LoadAsync<User>(user.Id);
-        //    userRetrieved.Books = user.Books;
 
-        //    await context.SaveAsync(userRetrieved);
-        //}
+        // CREATE
+        public async Task Insert(User newUser)
+        {
+            await _context.SaveAsync(newUser);
+        }
+
+        // READ
+        public async Task<User> Load(string email)
+        {
+            User loadUser = await _context.LoadAsync<User>(email, new DynamoDBContextConfig
+            {
+                ConsistentRead = true
+            });
+
+            return loadUser;
+        }
+
+        // UPDATE
+        public async Task Update(User user)
+        {
+            User userRetrieved = await _context.LoadAsync<User>(user.Email);
+
+            await _context.SaveAsync(userRetrieved);
+        }
 
     }
 }
