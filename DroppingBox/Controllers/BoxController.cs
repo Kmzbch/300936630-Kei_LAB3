@@ -47,16 +47,6 @@ namespace DroppingBox.Controllers
             return View(user.Files);
         }
 
-        //
-        public ActionResult Details(int id)
-        {
-            // File file = IFileRepository.getById(id);
-
-            File file = new File { FileId = "1", FileName = "File 1", FileLink = null, Comment = "comment 1" };
-
-            return View(file);
-        }
-
         // upload actions
         public ActionResult Upload()
         {
@@ -71,29 +61,20 @@ namespace DroppingBox.Controllers
 
             if (model.FormFile?.Length > 0)
             {
-                var fileName = Path.GetFileName(model.FormFile.FileName);
-
-                //byte[] fileBytes;
-                //using (var fileStream = model.FormFile.OpenReadStream())
-                //using (var ms = new MemoryStream())
-                //{
-                //    fileStream.CopyTo(ms);
-                //    fileBytes = ms.ToArray();
-                //}
-
-                //var fileName = Path.GetFileName(model.FormFile.FileName);
-                //var fileMimeType = model.FormFile.ContentType;
-                //var fileContent = fileBytes;
 
                 try
                 {
-                    // upload to S3
-                    //                    s3Manager.AddObject();
+                    var fileName = Path.GetFileName(model.FormFile.FileName);
+
+                    string url = await s3Manager.UploadFileAsync(model.FormFile);
+
+
 
                     File newFile = new File()
                     {
                         FileId = Guid.NewGuid().ToString(),
                         FileName = model.FormFile.FileName,
+                        FileLink = url,
                         Comment = model.Comment
                     };
 
@@ -118,6 +99,11 @@ namespace DroppingBox.Controllers
             return View(model);
         }
 
+
+
+
+
+
         // edit actions
         public ActionResult Edit(int id)
         {
@@ -137,7 +123,6 @@ namespace DroppingBox.Controllers
                 return View();
             }
         }
-
 
 
         // delete actions
@@ -161,28 +146,5 @@ namespace DroppingBox.Controllers
         }
 
 
-        //// delete actions
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-
-        //    try
-        //    {
-        //        //            s3Manager.remove object
-        //        // iFileRepolsitory.delete(id)
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

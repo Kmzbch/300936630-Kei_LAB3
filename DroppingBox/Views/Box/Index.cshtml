@@ -30,14 +30,13 @@
                 @Html.DisplayFor(modelItem => item.FileName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FileLink)
+                <a href="@item.FileLink" target="_blank">@item.FileLink</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Comment)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.FileId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.FileId }) |
                 @Html.ActionLink("Delete", "Delete", new { id = item.FileId })
             </td>
         </tr>

@@ -12,7 +12,7 @@ namespace DroppingBox.Models
         [DynamoDBProperty]
         public string FileName { get; set; }
         [DynamoDBProperty]
-        public S3Link FileLink { get; set; }
+        public string FileLink { get; set; }
         [DynamoDBProperty]
         public string Comment { get; set; }
 
