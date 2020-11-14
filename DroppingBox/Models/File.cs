@@ -3,7 +3,7 @@ using System;
 
 namespace DroppingBox.Models
 {
-    [DynamoDBTable("Files")]
+    [DynamoDBTable("File")]
     public class File
     {
 
@@ -15,5 +15,6 @@ namespace DroppingBox.Models
         public S3Link FileLink { get; set; }
         [DynamoDBProperty]
         public string Comment { get; set; }
+
     }
 }

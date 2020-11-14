@@ -1,16 +1,12 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.Runtime;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace DroppingBox.Models
 {
     public interface IUserRepository
     {
-//        Task<List<User>> GetAll();
         Task<User> GetByEmail(string email);
         Task Create(User user);
+        Task Update(User user);
         Task<bool> Exists(string email);
     }
 
@@ -23,10 +19,6 @@ namespace DroppingBox.Models
         {
             dDBOperations = new DDBOperations();
         }
-
-        //public async Task<List<User>> GetAll() { 
-        //    return await dDBOperations.get; 
-        //}
 
         public async Task<User> GetByEmail(string email) {
             return await dDBOperations.Load(email); }
@@ -42,6 +34,10 @@ namespace DroppingBox.Models
             return user != null;
         }
 
+        public async Task Update(User user)
+        {
+            await dDBOperations.Update(user);
+        }
 
     }
 }

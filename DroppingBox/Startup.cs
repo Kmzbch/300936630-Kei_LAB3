@@ -4,14 +4,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace DroppingBox
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+    public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+
+
         }
 
         public IConfiguration Configuration { get; }
@@ -23,6 +28,10 @@ namespace DroppingBox
 
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddMvc();
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +49,7 @@ namespace DroppingBox
 
             app.UseRouting();
 
+            app.UseSession();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

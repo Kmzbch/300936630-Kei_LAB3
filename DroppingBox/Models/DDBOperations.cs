@@ -52,14 +52,14 @@ namespace DroppingBox.Models
             {
                         new File
                         {
-                            FileId = "1",
+                            FileId = Guid.NewGuid().ToString(),
                             FileName = "image.jpg",
                             FileLink = null,
                             Comment = "Good"
                         },
                         new File
                         {
-                            FileId = "2",
+                            FileId = Guid.NewGuid().ToString(),
                             FileName = "image2.jpg",
                             FileLink = null,
                             Comment = "Good"
@@ -113,6 +113,7 @@ namespace DroppingBox.Models
                 }
             };
             await _client.CreateTableAsync(request);
+
         }
 
 
@@ -130,14 +131,6 @@ namespace DroppingBox.Models
                     _client.DescribeTableAsync(request).Result.Table;
 
                 return description.TableStatus;
-
-
-                // var response = _client.DescribeTableAsync(request);
-
-                //TableDescription description = response;
-
-                //// return CREATING/UPDATING/DELETING/ACTIVE
-                //return description.TableStatus;
             }
             catch (Exception e)
             {
@@ -167,8 +160,11 @@ namespace DroppingBox.Models
         public async Task Update(User user)
         {
             User userRetrieved = await _context.LoadAsync<User>(user.Email);
+            if(userRetrieved != null)
+            {
+                await _context.SaveAsync(user);
+            }
 
-            await _context.SaveAsync(userRetrieved);
         }
 
     }

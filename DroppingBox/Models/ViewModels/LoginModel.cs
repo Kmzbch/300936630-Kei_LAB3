@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DroppingBox.Models
+namespace DroppingBox.Models.ViewModels
 {
     public class LoginModel
     {

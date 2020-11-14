@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DroppingBox.Models
+namespace DroppingBox.Models.ViewModels
 {
     public class SignupModel
     {

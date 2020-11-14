@@ -1,23 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DroppingBox.Models;
+using DroppingBox.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace DroppingBox.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        // field
         private IUserRepository iUserRepository;
+
+        // constructors
         public AccountController(IUserRepository iUserRepository)
         {
             this.iUserRepository = iUserRepository;
         }
 
+        // login actions
         [AllowAnonymous]
         public ActionResult Login()
         {
@@ -35,6 +38,8 @@ namespace DroppingBox.Controllers
 
                 if (user != null)
                 {
+                    HttpContext.Session.SetString("loggedInUser", user.Email);
+                    
                     if (user.Password.Equals(model.Password)) {
                         return Redirect(model?.ReturnUrl ?? "/Box/Index");
                     }
@@ -46,6 +51,7 @@ namespace DroppingBox.Controllers
             return View(model);
         }
 
+        // signup actions
         [AllowAnonymous]
         public ActionResult Signup()
         {
@@ -85,5 +91,6 @@ namespace DroppingBox.Controllers
             }
             return View(model);
         }
+
     }
 }
