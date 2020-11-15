@@ -2,9 +2,8 @@
 
 namespace DroppingBox.Models.ViewModels
 {
-    public class LoginModel
+    public class LoginViewModel
     {
-
         [Required]
         public string Email { get; set; }
 

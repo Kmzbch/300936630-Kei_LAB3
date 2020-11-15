@@ -1,0 +1,86 @@
+﻿@model List<File>
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Dropping Box!</h1>
+</div>
+
+<p class="text-center">
+    <a asp-controller="Home" asp-action="Upload">
+        <input type="button" class="btn btn-primary" value="Upload New" />
+    </a>
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            File Name
+        </th>
+        <th>
+            File Link
+        </th>
+        <th>
+            Comment
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileName)
+            </td>
+            <td>
+                <a href="@item.FileLink" target="_blank">@item.FileLink</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comment)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.FileId }) |
+@*                @Html.ActionLink("Delete", "Delete", new { id = item.FileId })*@
+                @Html.ActionLink("Delete", "Delete", new { id = item.FileId }, new { onclick = "return ConfirmDialog('Are you sure');" })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<script>
+    function ConfirmDialog(message) {
+        $('<div></div>').appendTo('body')
+            .html('<div><h6>' + message + '?</h6></div>')
+            .dialog({
+                modal: true,
+                title: 'Delete message',
+                zIndex: 10000,
+                autoOpen: true,
+                width: 'auto',
+                resizable: false,
+                buttons: {
+                    Yes: function () {
+                        // $(obj).removeAttr('onclick');
+                        // $(obj).parents('.Parent').remove();
+
+                        $('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                        $(this).dialog("close");
+                    },
+                    No: function () {
+                        $('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                        $(this).dialog("close");
+                    }
+                },
+                close: function (event, ui) {
+                    $(this).remove();
+                }
+            });
+        return false;
+    };
+
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>

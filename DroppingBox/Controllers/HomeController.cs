@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DroppingBox.Models;
 using DroppingBox.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using File = DroppingBox.Models.File;
 
 namespace DroppingBox.Controllers
 {
-    public class BoxController : Controller
+    public class HomeController : Controller
     {
         // field
         string accessId = "AKIAWY236QUIWBQ5VJMF";
@@ -22,7 +20,7 @@ namespace DroppingBox.Controllers
         private IUserRepository iuserRepository;
 
         // constructers
-        public BoxController(IUserRepository iUserRepository)
+        public HomeController(IUserRepository iUserRepository)
         {
             this.iuserRepository = iUserRepository;
 
@@ -50,13 +48,13 @@ namespace DroppingBox.Controllers
         // upload actions
         public ActionResult Upload()
         {
-            UploadModel model = new UploadModel();
+            UploadViewModel model = new UploadViewModel();
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Upload(UploadModel model)
+        public async Task<ActionResult> Upload(UploadViewModel model)
         {
 
             if (model.FormFile?.Length > 0)
@@ -105,27 +103,55 @@ namespace DroppingBox.Controllers
 
 
         // edit actions
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(string id)
+
         {
-            return View();
+            User user = await iuserRepository.GetByEmail(
+                HttpContext.Session.GetString("loggedInUser")
+                );
+
+            File file = user.Files.Find(f => f.FileId == id);
+
+            EditViewModel model = new EditViewModel() { 
+                FileId = file.FileId,
+                Comment = file.Comment,
+                FileLink = file.FileLink
+            };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(EditViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    User user = await iuserRepository.GetByEmail(
+                        HttpContext.Session.GetString("loggedInUser")
+                        );
+
+                    user.Files.Find(f=>f.FileId == model.FileId)
+                        .Comment = model.Comment;
+
+                    await iuserRepository.Update(user);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    return View();
+                }
             }
-            catch
-            {
-                return View();
-            }
+
+            ModelState.AddModelError("", "Invalid file or file name");
+
+            return View(model);
+
         }
 
 
-        // delete actions
         public async Task<ActionResult> Delete(String id)
         {
             try

@@ -1,4 +1,4 @@
-﻿@model DroppingBox.Models.ViewModels.LoginModel
+﻿@model DroppingBox.Models.ViewModels.LoginViewModel
 
 @{
     ViewData["Title"] = "Login";
@@ -29,7 +29,7 @@
     </div>
 </div>
 
-<a asp-area="" asp-controller="Account" asp-action="Signup">Signup</a>
+<a asp-area="" asp-controller="Account" asp-action="Signup" method="get">Signup</a>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

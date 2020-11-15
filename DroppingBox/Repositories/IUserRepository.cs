@@ -2,6 +2,7 @@
 
 namespace DroppingBox.Models
 {
+    // Interface
     public interface IUserRepository
     {
         Task<User> GetByEmail(string email);
@@ -9,7 +10,6 @@ namespace DroppingBox.Models
         Task Update(User user);
         Task<bool> Exists(string email);
     }
-
 
     public class UserRepository : IUserRepository
     {
@@ -30,7 +30,6 @@ namespace DroppingBox.Models
         public async Task<bool> Exists(string email)
         {
             User user = await dDBOperations.Load(email);
-
             return user != null;
         }
 

@@ -26,7 +26,6 @@ namespace DroppingBox.Models
             _client = new AmazonDynamoDBClient(_credentials, Amazon.RegionEndpoint.USEast1);
             _context = new DynamoDBContext(_client);
 
-            //
             if (this.GetTableStatus("User").Equals("NOTABLE"))
             {
                 Task.Run(async () =>
@@ -113,11 +112,8 @@ namespace DroppingBox.Models
                 }
             };
             await _client.CreateTableAsync(request);
-
         }
 
-
-        //// table description
         public string GetTableStatus(string tableName)
         {
             var request = new DescribeTableRequest
@@ -137,7 +133,6 @@ namespace DroppingBox.Models
                 return "NOTABLE";
             }
         }
-
 
         // CREATE
         public async Task Insert(User newUser)
@@ -164,7 +159,6 @@ namespace DroppingBox.Models
             {
                 await _context.SaveAsync(user);
             }
-
         }
 
     }

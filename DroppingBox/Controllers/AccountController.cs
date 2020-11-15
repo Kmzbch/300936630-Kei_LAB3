@@ -27,7 +27,7 @@ namespace DroppingBox.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginModel model)
+        public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -37,7 +37,7 @@ namespace DroppingBox.Controllers
                 {                                        
                     if (BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) {
                         HttpContext.Session.SetString("loggedInUser", user.Email);
-                        return Redirect(model?.ReturnUrl ?? "/Box/Index");
+                        return Redirect(model?.ReturnUrl ?? "/Home/Index");
                     }
                 }
 
@@ -47,21 +47,31 @@ namespace DroppingBox.Controllers
             return View(model);
         }
 
-        // signup actions
         [AllowAnonymous]
-        public ActionResult Signup()
+
+        public ActionResult Logout()
         {
-            return View();
+            HttpContext.Session.SetString("loggedInUser", "");
+            return RedirectToAction("Login", "Account");
         }
 
-        [HttpPost]
+        // signup actions
         [AllowAnonymous]
+        [HttpGet("Signup")]
+        public ActionResult Signup()
+        {
+            SignupViewModel model = new SignupViewModel();
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("Signup")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Signup(SignupModel model)
+        public async Task<ActionResult> Signup(SignupViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if(! await iUserRepository.Exists(model.Email))
+                if (!await iUserRepository.Exists(model.Email))
                 {
                     User newUser = new User
                     {
@@ -71,7 +81,7 @@ namespace DroppingBox.Controllers
                         Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                         Files = new List<File>()
                     };
-                    
+
                     try
                     {
                         await iUserRepository.Create(newUser);

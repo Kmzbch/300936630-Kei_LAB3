@@ -8,16 +8,13 @@ namespace DroppingBox.Models
     {
         [DynamoDBHashKey]
         public string Email { get; set; }
-
         [DynamoDBProperty]
         public string FirstName { get; set; }
         [DynamoDBProperty]
         public string LastName { get; set; }
         [DynamoDBProperty]
         public string Password { get; set; }
-
         [DynamoDBProperty]
         public List<File> Files { get; set; }
-
     }
 }

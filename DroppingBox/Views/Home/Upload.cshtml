@@ -1,12 +1,12 @@
-﻿@model DroppingBox.Models.ViewModels.UploadModel
+﻿@model DroppingBox.Models.ViewModels.UploadViewModel
 
 @{
-    ViewData["Title"] = "Upload";
+    ViewData["Title"] = "Upload File";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<div class="row">
+<div class="row mt-5">
     <div class="col-md-4">
         <form asp-action="Upload"  enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -23,13 +23,13 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Upload" class="btn btn-primary" />
+                <a asp-controller="Home" asp-action="Index">
+                    <input type="button" class="btn btn-secondary" value="Cancel" />
+                </a>
+
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-controller="Box" asp-action="Index">Back to Box</a>
 </div>
 
 @section Scripts {
