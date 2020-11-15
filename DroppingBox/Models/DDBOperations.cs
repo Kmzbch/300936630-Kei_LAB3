@@ -71,7 +71,7 @@ namespace DroppingBox.Models
                 Email = "cdfray@gmail.com",
                 FirstName = "Kei",
                 LastName = "Mizubuchi",
-                Password = "password",
+                Password = BCrypt.Net.BCrypt.HashPassword("password"),
                 Files = files
             };
 

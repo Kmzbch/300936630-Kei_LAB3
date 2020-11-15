@@ -1,14 +1,11 @@
 ﻿using Amazon;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DroppingBox.Models

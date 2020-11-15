@@ -1,26 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DroppingBox.Models;
 using DroppingBox.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace DroppingBox.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        // field
         private IUserRepository iUserRepository;
 
-        // constructors
         public AccountController(IUserRepository iUserRepository)
         {
             this.iUserRepository = iUserRepository;
         }
 
-        // login actions
         [AllowAnonymous]
         public ActionResult Login()
         {
@@ -37,10 +34,9 @@ namespace DroppingBox.Controllers
                 User user = await iUserRepository.GetByEmail(model.Email);
 
                 if (user != null)
-                {
-                    HttpContext.Session.SetString("loggedInUser", user.Email);
-                    
-                    if (user.Password.Equals(model.Password)) {
+                {                                        
+                    if (BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) {
+                        HttpContext.Session.SetString("loggedInUser", user.Email);
                         return Redirect(model?.ReturnUrl ?? "/Box/Index");
                     }
                 }
@@ -72,9 +68,10 @@ namespace DroppingBox.Controllers
                         Email = model.Email,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        Password = model.Password,
+                        Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
+                        Files = new List<File>()
                     };
-
+                    
                     try
                     {
                         await iUserRepository.Create(newUser);
